@@ -1,0 +1,70 @@
+{% extends 'layout.html' %}
+{% block content %}
+<h1>Herramientas del Aula</h1>
+<div class="row">
+  <div class="col-md-4">
+    <h2>Temporizador</h2>
+    <input type="number" id="timerInput" class="form-control" placeholder="Segundos">
+    <button class="btn btn-primary mt-2" onclick="startTimer()">Iniciar</button>
+    <p id="timerDisplay" class="fs-3 mt-2"></p>
+  </div>
+  <div class="col-md-4">
+    <h2>Cronómetro</h2>
+    <p id="stopwatchDisplay" class="fs-3">0</p>
+    <button class="btn btn-primary" onclick="startStopwatch()">Inicio</button>
+    <button class="btn btn-secondary" onclick="stopStopwatch()">Parar</button>
+    <button class="btn btn-danger" onclick="resetStopwatch()">Reiniciar</button>
+  </div>
+  <div class="col-md-4">
+    <h2>Selector de Alumno al Azar</h2>
+    <select id="grupoSelect" class="form-select mb-2">
+      {% for grupo in grupos %}
+        <option value="{{ grupo.id }}">{{ grupo.nombre }}</option>
+      {% endfor %}
+    </select>
+    <button class="btn btn-primary" onclick="seleccionarAlumno()">Seleccionar</button>
+    <p id="alumnoSeleccionado" class="fs-4 mt-2"></p>
+  </div>
+</div>
+<script>
+let timer;
+function startTimer() {
+  const seconds = parseInt(document.getElementById('timerInput').value);
+  const display = document.getElementById('timerDisplay');
+  clearInterval(timer);
+  let remaining = seconds;
+  display.textContent = remaining;
+  timer = setInterval(() => {
+    remaining--;
+    display.textContent = remaining;
+    if (remaining <= 0) clearInterval(timer);
+  }, 1000);
+}
+let stopwatchInterval;
+let stopwatchTime = 0;
+function startStopwatch() {
+  stopwatchInterval = setInterval(() => {
+    stopwatchTime++;
+    document.getElementById('stopwatchDisplay').textContent = stopwatchTime;
+  }, 1000);
+}
+function stopStopwatch() { clearInterval(stopwatchInterval); }
+function resetStopwatch() {
+  stopwatchTime = 0;
+  document.getElementById('stopwatchDisplay').textContent = 0;
+  clearInterval(stopwatchInterval);
+}
+function seleccionarAlumno() {
+  const grupoId = document.getElementById('grupoSelect').value;
+  fetch(`/api/grupo/${grupoId}/alumnos`).then(r => r.json()).then(data => {
+    const alumnos = data.alumnos;
+    if (alumnos.length === 0) {
+      document.getElementById('alumnoSeleccionado').textContent = 'No hay alumnos';
+      return;
+    }
+    const elegido = alumnos[Math.floor(Math.random() * alumnos.length)];
+    document.getElementById('alumnoSeleccionado').textContent = elegido.nombre;
+  });
+}
+</script>
+{% endblock %}

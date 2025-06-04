@@ -1,0 +1,22 @@
+{% extends 'layout.html' %}
+{% block content %}
+<h1>Grupos</h1>
+<form action="{{ url_for('nuevo_grupo') }}" method="post" class="row g-3 mb-3">
+  <div class="col-auto">
+    <input type="text" name="nombre" placeholder="Nuevo grupo" class="form-control" required>
+  </div>
+  <div class="col-auto">
+    <button type="submit" class="btn btn-primary">Agregar</button>
+  </div>
+</form>
+<ul class="list-group">
+  {% for grupo in grupos %}
+  <li class="list-group-item d-flex justify-content-between align-items-center">
+    <a href="{{ url_for('ver_grupo', grupo_id=grupo.id) }}">{{ grupo.nombre }}</a>
+    <span class="badge bg-secondary">{{ grupo.alumnos|length }} alumnos</span>
+  </li>
+  {% else %}
+  <li class="list-group-item">No hay grupos.</li>
+  {% endfor %}
+</ul>
+{% endblock %}

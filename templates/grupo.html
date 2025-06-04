@@ -1,0 +1,52 @@
+{% extends 'layout.html' %}
+{% block content %}
+<h1>{{ grupo.nombre }}</h1>
+<h2>Alumnos</h2>
+<form action="{{ url_for('nuevo_alumno', grupo_id=grupo.id) }}" method="post" class="row g-3 mb-3">
+  <div class="col-auto">
+    <input type="text" name="nombre" placeholder="Nombre del alumno" class="form-control" required>
+  </div>
+  <div class="col-auto">
+    <button type="submit" class="btn btn-primary">Agregar</button>
+  </div>
+</form>
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>Nombre</th>
+      <th>Asistencia hoy</th>
+      <th>Agregar nota</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for alumno in grupo.alumnos %}
+    <tr>
+      <td>{{ alumno.nombre }}</td>
+      <td>
+        <form action="{{ url_for('pasar_asistencia', alumno_id=alumno.id) }}" method="post">
+          <input type="hidden" name="presente" value="1">
+          <button type="submit" class="btn btn-success btn-sm">Presente</button>
+        </form>
+      </td>
+      <td>
+        <form action="{{ url_for('agregar_nota', alumno_id=alumno.id) }}" method="post" class="row g-2">
+          <div class="col">
+            <input type="text" name="criterio" placeholder="Criterio" class="form-control" required>
+          </div>
+          <div class="col">
+            <input type="text" name="instrumento" placeholder="Instrumento" class="form-control" required>
+          </div>
+          <div class="col">
+            <input type="number" step="0.01" name="valor" placeholder="Nota" class="form-control" required>
+          </div>
+          <div class="col">
+            <button type="submit" class="btn btn-primary btn-sm">Guardar</button>
+          </div>
+        </form>
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+<a href="{{ url_for('index') }}" class="btn btn-secondary">Volver</a>
+{% endblock %}
